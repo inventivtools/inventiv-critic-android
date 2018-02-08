@@ -1,13 +1,7 @@
-plugins {
-    id 'com.github.dcendents.android-maven' version "1.5"
-}
 apply plugin: 'com.android.library'
-
-group='com.github.inventiv-llc'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "23.0.2"
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26

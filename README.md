@@ -4,20 +4,16 @@
 This library uses Retrofit and the Gson Retrofit Converter.
 
 ## Installation
-1. Add the JitPack repository to your application's `build.gradle` file.
+1. Download this repository to your local filesystem.
+1. Add the Critic library to your `settings.gradle` file.
 ```
-    allprojects {
-        repositories {
-            google()
-            jcenter()
-            maven { url "https://jitpack.io" }
-        }
-    }
+    include ':critic'
+    project(':critic').projectDir = new File('YOUR_PATH_TO/inventiv-critic-android/library')
 ```
 1. Add the following dependencies to your application's `app/build.gradle` file.
 ```
     dependencies {
-        compile 'com.github.inventiv-llc:inventiv-critic-android:0.0.1'
+        compile ':critic'
     }
 ```
 1. Add the INTERNET permission to your applications `app/src/main/AndroidManifest.xml` file.
