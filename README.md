@@ -21,7 +21,23 @@ This library uses Retrofit and the Gson Retrofit Converter.
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-## Usage
+## Sending Customer Feedback Reports
+1. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details.
+2. Use the Product Access Token to submit a feedback report. Perform this work on a background thread.
+```
+    String productAccessToken = "YOUR_PRODUCT_ACCESS_TOKEN";
+    String description = "Text provided by your user.";
+    String metadata = "{\"info_about_metadata\": \"Any valid JSON can be sent as metadata.\"}";
+    
+    List<File> fileAttachments = new ArrayList<File>();
+    fileAttachments.add(new File("/path/to/file/you/want"));
+    fileAttachments.add(new File("/path/to/another/file/you/want"));
+    
+    Client.createReport(productAccessToken, description, metadata, fileAttachments);
+```
+3. The `Client.createReport()` call will return true if successful.
+
+## General Usage
 1. Authenticate using the provided `Client` class.
 ```
     if( Client.authenticate("me@example.com", "my super secret password") ) {
@@ -31,7 +47,7 @@ This library uses Retrofit and the Gson Retrofit Converter.
         // Authentication failure. Check your credentials and Internet connectivity, and then try again.
     }
 ```
-2. Send web requests using the Retrofit helper methods in the `Client` class. This will fail if you have not authenticated during the current user session / application lifecycle.
+2. Send web requests from a background thread using the Retrofit helper methods in the `Client` class. This will fail if you have not authenticated during the current user session / application lifecycle.
 ```
     Call<User> userCall = Client.userService().profile();
     try {
