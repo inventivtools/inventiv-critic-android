@@ -1,8 +1,10 @@
 package io.inventiv.critic.service;
 
-import io.inventiv.critic.client.Configuration;
-import io.inventiv.critic.model.Report;
 import java.util.List;
+
+import io.inventiv.critic.client.Configuration;
+import io.inventiv.critic.model.NewReportRequest;
+import io.inventiv.critic.model.Report;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,7 +25,7 @@ public interface ReportService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/reports/{id}")
+    @GET("/api/v1/reports/{id}")
     Call<Report> get(@Path("id") Long id);
 
     // TODO move these static headers to a request interceptor.
@@ -32,7 +34,7 @@ public interface ReportService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/reports/")
+    @GET("/api/v1/reports/")
     Call<List<Report>> list(@Query("page") Long page);
 
     // TODO move these static headers to a request interceptor.
@@ -41,8 +43,8 @@ public interface ReportService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @POST("/reports/")
-    Call<Report> create(@Body Report report);
+    @POST("/api/v1/reports/")
+    Call<Report> create(@Body NewReportRequest.Wrapper report);
 
     // TODO move these static headers to a request interceptor.
     @Headers({
@@ -50,7 +52,7 @@ public interface ReportService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @PUT("/reports/{id}")
+    @PUT("/api/v1/reports/{id}")
     Call<Report> update(@Path("id") Long id, @Body Report report);
 
     // TODO move these static headers to a request interceptor.
@@ -59,6 +61,6 @@ public interface ReportService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @DELETE("/reports/{id}")
+    @DELETE("/api/v1/reports/{id}")
     Call<ResponseBody> delete(@Path("id") Long id);
 }

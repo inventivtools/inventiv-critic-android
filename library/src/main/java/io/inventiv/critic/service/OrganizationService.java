@@ -1,8 +1,9 @@
 package io.inventiv.critic.service;
 
+import java.util.List;
+
 import io.inventiv.critic.client.Configuration;
 import io.inventiv.critic.model.Organization;
-import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,7 +24,7 @@ public interface OrganizationService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/organizations/{id}")
+    @GET("/api/v1/organizations/{id}")
     Call<Organization> get(@Path("id") Long id);
 
     // TODO move these static headers to a request interceptor.
@@ -32,7 +33,7 @@ public interface OrganizationService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/organizations/")
+    @GET("/api/v1/organizations/")
     Call<List<Organization>> list(@Query("page") Long page);
 
     // TODO move these static headers to a request interceptor.
@@ -41,7 +42,7 @@ public interface OrganizationService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @POST("/organizations/")
+    @POST("/api/v1/organizations/")
     Call<Organization> create(@Body Organization organization);
 
     // TODO move these static headers to a request interceptor.
@@ -50,7 +51,7 @@ public interface OrganizationService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @PUT("/organizations/{id}")
+    @PUT("/api/v1/organizations/{id}")
     Call<Organization> update(@Path("id") Long id, @Body Organization organization);
 
     // TODO move these static headers to a request interceptor.
@@ -59,6 +60,6 @@ public interface OrganizationService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @DELETE("/organizations/{id}")
+    @DELETE("/api/v1/organizations/{id}")
     Call<ResponseBody> delete(@Path("id") Long id);
 }

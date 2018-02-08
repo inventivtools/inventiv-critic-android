@@ -1,7 +1,9 @@
 package io.inventiv.critic.model;
 
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
+import java.util.List;
 
 public class Report {
 
@@ -13,18 +15,12 @@ public class Report {
 	private Date createdAt;
 	@SerializedName("updated_at")
 	private Date updatedAt;
-	@SerializedName("attachment_file_name")
-	private String attachmentFileName;
-	@SerializedName("attachment_content_type")
-	private String attachmentContentType;
-	@SerializedName("attachment_file_size")
-	private Long attachmentFileSize;
-	@SerializedName("attachment_updated_at")
-	private Date attachmentUpdatedAt;
 	@SerializedName("product_id")
 	private Long productId;
 	@SerializedName("metadata")
 	private String metadata;
+	@SerializedName("attachments")
+	private List<Attachment> attachments;
 
     public Long getId() {
 		return id;
@@ -58,38 +54,6 @@ public class Report {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getAttachmentFileName() {
-		return attachmentFileName;
-	}
-
-	public void setAttachmentFileName(String attachmentFileName) {
-		this.attachmentFileName = attachmentFileName;
-	}
-
-	public String getAttachmentContentType() {
-		return attachmentContentType;
-	}
-
-	public void setAttachmentContentType(String attachmentContentType) {
-		this.attachmentContentType = attachmentContentType;
-	}
-
-	public Long getAttachmentFileSize() {
-		return attachmentFileSize;
-	}
-
-	public void setAttachmentFileSize(Long attachmentFileSize) {
-		this.attachmentFileSize = attachmentFileSize;
-	}
-
-	public Date getAttachmentUpdatedAt() {
-		return attachmentUpdatedAt;
-	}
-
-	public void setAttachmentUpdatedAt(Date attachmentUpdatedAt) {
-		this.attachmentUpdatedAt = attachmentUpdatedAt;
-	}
-
 	public Long getProductId() {
 		return productId;
 	}
@@ -105,6 +69,10 @@ public class Report {
 	public void setMetadata(String metadata) {
 		this.metadata = metadata;
 	}
+
+	public List<Attachment> getAttachments() { return attachments; }
+
+	public void setAttachments(List<Attachment> attachments) { this.attachments = attachments; }
 
     /**
      * Wrapper for Report objects to use prior to serialization of JSON payloads in some Retrofit web requests.

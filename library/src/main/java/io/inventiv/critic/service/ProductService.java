@@ -1,8 +1,9 @@
 package io.inventiv.critic.service;
 
+import java.util.List;
+
 import io.inventiv.critic.client.Configuration;
 import io.inventiv.critic.model.Product;
-import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,7 +24,7 @@ public interface ProductService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/products/{id}")
+    @GET("/api/v1/products/{id}")
     Call<Product> get(@Path("id") Long id);
 
     // TODO move these static headers to a request interceptor.
@@ -32,7 +33,7 @@ public interface ProductService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/products/")
+    @GET("/api/v1/products/")
     Call<List<Product>> list(@Query("page") Long page);
 
     // TODO move these static headers to a request interceptor.
@@ -41,7 +42,7 @@ public interface ProductService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @POST("/products/")
+    @POST("/api/v1/products/")
     Call<Product> create(@Body Product product);
 
     // TODO move these static headers to a request interceptor.
@@ -50,7 +51,7 @@ public interface ProductService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @PUT("/products/{id}")
+    @PUT("/api/v1/products/{id}")
     Call<Product> update(@Path("id") Long id, @Body Product product);
 
     // TODO move these static headers to a request interceptor.
@@ -59,6 +60,6 @@ public interface ProductService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @DELETE("/products/{id}")
+    @DELETE("/api/v1/products/{id}")
     Call<ResponseBody> delete(@Path("id") Long id);
 }

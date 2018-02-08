@@ -11,7 +11,6 @@ import java.io.IOException;
 
 import io.inventiv.critic.model.User;
 import io.inventiv.critic.service.UserService;
-import io.inventiv.critic.service.AttachmentService;
 import io.inventiv.critic.service.MembershipService;
 import io.inventiv.critic.service.OrganizationService;
 import io.inventiv.critic.service.ProductService;
@@ -68,10 +67,6 @@ public final class Client {
 
     public static UserService userService() {
 		return service(UserService.class);
-	}
-
-	public static AttachmentService attachmentService() {
-		return service(AttachmentService.class);
 	}
 
 	public static MembershipService membershipService() {

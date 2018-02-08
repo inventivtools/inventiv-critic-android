@@ -21,6 +21,8 @@ public class Attachment {
 	private Long fileFileSize;
 	@SerializedName("file_updated_at")
 	private Date fileUpdatedAt;
+	@SerializedName("file_url")
+	private String fileUrl;
 
     public Long getId() {
 		return id;
@@ -86,7 +88,15 @@ public class Attachment {
 		this.fileUpdatedAt = fileUpdatedAt;
 	}
 
-    /**
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+
+	/**
      * Wrapper for Attachment objects to use prior to serialization of JSON payloads in some Retrofit web requests.
      */
 	public static class Wrapper {

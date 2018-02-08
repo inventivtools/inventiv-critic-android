@@ -1,8 +1,9 @@
 package io.inventiv.critic.service;
 
+import java.util.List;
+
 import io.inventiv.critic.client.Configuration;
 import io.inventiv.critic.model.Membership;
-import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,7 +24,7 @@ public interface MembershipService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/memberships/{id}")
+    @GET("/api/v1/memberships/{id}")
     Call<Membership> get(@Path("id") Long id);
 
     // TODO move these static headers to a request interceptor.
@@ -32,7 +33,7 @@ public interface MembershipService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @GET("/memberships/")
+    @GET("/api/v1/memberships/")
     Call<List<Membership>> list(@Query("page") Long page);
 
     // TODO move these static headers to a request interceptor.
@@ -41,7 +42,7 @@ public interface MembershipService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @POST("/memberships/")
+    @POST("/api/v1/memberships/")
     Call<Membership> create(@Body Membership membership);
 
     // TODO move these static headers to a request interceptor.
@@ -50,7 +51,7 @@ public interface MembershipService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @PUT("/memberships/{id}")
+    @PUT("/api/v1/memberships/{id}")
     Call<Membership> update(@Path("id") Long id, @Body Membership membership);
 
     // TODO move these static headers to a request interceptor.
@@ -59,6 +60,6 @@ public interface MembershipService {
         "Content-Type: application/json",
         "User-Agent: " + Configuration.USER_AGENT
     })
-    @DELETE("/memberships/{id}")
+    @DELETE("/api/v1/memberships/{id}")
     Call<ResponseBody> delete(@Path("id") Long id);
 }
