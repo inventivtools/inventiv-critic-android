@@ -3,6 +3,7 @@ apply plugin: 'com.android.library'
 buildscript {
 
     repositories {
+        maven { url "https://maven.google.com" }
         maven { url "https://jcenter.bintray.com" }
     }
     dependencies {
@@ -15,6 +16,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "https://maven.google.com" }
         maven { url "https://jcenter.bintray.com" }
         maven { url "https://jitpack.io" }
     }
