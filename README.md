@@ -8,7 +8,7 @@ This library uses Retrofit and the Gson Retrofit Converter.
 1. Add the Critic library to your `settings.gradle` file.
 ```
     include ':critic'
-    project(':critic').projectDir = new File('YOUR_PATH_TO/inventiv-critic-android/library')
+    project(':critic').projectDir = new File('/YOUR_PATH_TO/inventiv-critic-android/library')
 ```
 1. Add the following dependencies to your application's `app/build.gradle` file.
 ```
