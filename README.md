@@ -17,7 +17,7 @@ This library uses Retrofit and the Gson Retrofit Converter.
 1. Add the following dependencies to your application's `app/build.gradle` file.
 ```
     dependencies {
-        compile 'com.github.inventiv-llc:inventiv-critic-android'
+        compile 'com.github.inventiv-llc:inventiv-critic-android:0.0.1'
     }
 ```
 1. Add the INTERNET permission to your applications `app/src/main/AndroidManifest.xml` file.
