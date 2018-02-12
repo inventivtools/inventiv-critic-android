@@ -22,7 +22,7 @@ allprojects {
         compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     }
 ```
-3. Add the INTERNET permission to your applications `app/src/main/AndroidManifest.xml` file.
+3. Add the INTERNET permission to your application's `app/src/main/AndroidManifest.xml` file.
 ```
 <uses-permission android:name="android.permission.INTERNET" />
 ```
