@@ -17,7 +17,7 @@ allprojects {
 2. Add the following dependencies to your application's `app/build.gradle` file.
 ```
     dependencies {
-        compile 'io.inventiv.critic.android:critic-android:0.0.3@aar'
+        compile 'io.inventiv.critic.android:critic-android:0.0.4@aar'
         compile 'com.squareup.retrofit2:retrofit:2.3.0'
         compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     }
@@ -31,17 +31,25 @@ allprojects {
 1. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details.
 2. Use the Product Access Token to submit a feedback report. Perform this work on a background thread.
 ```
-    String productAccessToken = "YOUR_PRODUCT_ACCESS_TOKEN";
+    String productAccessToken = "YOUR_PRODUCT_ACCESS_TOKEN"; // see https://inventiv.io/critic/critic-integration-getting-started/ for details.
     String description = "Text provided by your user.";
-    String metadata = "{\"info_about_metadata\": \"Any valid JSON can be sent as metadata.\"}";
+
+    JsonObject metadata = new JsonObject();
+    metadata.addProperty("star_rating", 5);
+    metadata.addProperty("user_id", "adbe342-93245-32549324-aefff3490");    
+
+    List<File> files = new ArrayList<File>();
+    files.add(new File("/path/to/a/file/to/attach"));
+    files.add(new File("/path/to/another/file/to/attach"));
     
-    List<File> fileAttachments = new ArrayList<File>();
-    fileAttachments.add(new File("/path/to/file/you/want"));
-    fileAttachments.add(new File("/path/to/another/file/you/want"));
-    
-    Client.createReport(productAccessToken, description, metadata, fileAttachments);
+    Report report = new ReportCreator()
+        .productAccessToken(productAccessToken)
+        .description(description)
+        .metadata(metadata)
+        .attachments(files)
+    .create(); // throws a ReportCreationException if something went wrong.
 ```
-3. The `Client.createReport()` call will return true if successful.
+3. The `ReportCreator.create()` call will return a Report object if successful. Otherwise, a `ReportCreationException` will be thrown.
 
 ## General Usage
 1. Authenticate using the provided `Client` class.

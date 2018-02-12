@@ -7,22 +7,15 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import io.inventiv.critic.model.Report;
 import io.inventiv.critic.model.User;
 import io.inventiv.critic.service.MembershipService;
 import io.inventiv.critic.service.OrganizationService;
 import io.inventiv.critic.service.ProductService;
 import io.inventiv.critic.service.ReportService;
 import io.inventiv.critic.service.UserService;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -60,35 +53,6 @@ public final class Client {
         }
 
         Client.setAuthorizationToken(authorizationToken);
-        return true;
-    }
-
-    public static final boolean createReport(String productAccessToken, String description, String metadata, List<File> fileAttachments) {
-
-        List<MultipartBody.Part> parts = new ArrayList();
-        parts.add( MultipartBody.Part.createFormData("report[product_access_token]", productAccessToken ) );
-        parts.add( MultipartBody.Part.createFormData("report[description]", description ) );
-        parts.add( MultipartBody.Part.createFormData("report[metadata]", metadata ) );
-
-        for(File file: fileAttachments) {
-            String filename = file.getName();
-            String contentType = "text/plain";
-            if(filename.endsWith("bmp") || filename.endsWith("jpeg") || filename.endsWith("jpg") || filename.endsWith("png")) {
-                contentType = "image/*";
-            }
-            parts.add( MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)) );
-        }
-
-        try {
-            Response<Report> reportResponse = Client.reportService().create(parts).execute();
-            if(reportResponse.code() != 201) {
-                return false;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
         return true;
     }
 
