@@ -1,5 +1,8 @@
 package io.inventiv.critic.client;
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.google.gson.JsonObject;
 
 import java.io.File;
@@ -7,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.inventiv.critic.FeedbackReportActivity;
 import io.inventiv.critic.model.Report;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -19,6 +23,12 @@ public class ReportCreator {
     private String description;
     private JsonObject metadata;
     private List<File> attachments;
+
+    public static void showDefaultActivity(Context context, String productAccessToken) {
+        Intent intent = new Intent(context, FeedbackReportActivity.class);
+        intent.putExtra("productAccessToken", productAccessToken);
+        context.startActivity(intent);
+    }
 
     public Report create() throws ReportCreationException {
 
@@ -39,13 +49,15 @@ public class ReportCreator {
         parts.add( MultipartBody.Part.createFormData("report[description]", description() ) );
         parts.add( MultipartBody.Part.createFormData("report[metadata]", metadata().toString() ) );
 
-        for(File file: attachments()) {
-            String filename = file.getName();
-            String contentType = "text/plain";
-            if(filename.endsWith("bmp") || filename.endsWith("jpeg") || filename.endsWith("jpg") || filename.endsWith("png")) {
-                contentType = "image/*";
+        if(attachments() != null && attachments().size() > 0 ) {
+            for (File file : attachments()) {
+                String filename = file.getName();
+                String contentType = "text/plain";
+                if (filename.endsWith("bmp") || filename.endsWith("jpeg") || filename.endsWith("jpg") || filename.endsWith("png")) {
+                    contentType = "image/*";
+                }
+                parts.add(MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)));
             }
-            parts.add( MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)) );
         }
 
         Report report = null;
@@ -104,7 +116,7 @@ public class ReportCreator {
         return this;
     }
 
-    private static class ReportCreationException extends RuntimeException {
+    public static class ReportCreationException extends RuntimeException {
 
         public ReportCreationException(String message) {
             super(message);

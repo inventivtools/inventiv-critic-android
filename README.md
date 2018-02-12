@@ -17,7 +17,7 @@ allprojects {
 2. Add the following dependencies to your application's `app/build.gradle` file.
 ```
     dependencies {
-        compile 'io.inventiv.critic.android:critic-android:0.0.4@aar'
+        compile 'io.inventiv.critic.android:critic-android:0.0.5@aar'
         compile 'com.squareup.retrofit2:retrofit:2.3.0'
         compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     }
