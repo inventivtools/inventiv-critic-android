@@ -27,8 +27,15 @@ allprojects {
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-## Sending Customer Feedback Reports
+## Sending Customer Feedback Reports Using the Default Screen
 1. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details.
+2. Use the Product Access Token to invoke the default feedback report screen.
+```
+    ReportCreator.showDefaultActivity(YourActivity.this, "YOUR_PRODUCT_ACCESS_TOKEN");
+```
+
+## Sending Customer Feedback Reports Your Own Way
+1. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details. 
 2. Use the Product Access Token to submit a feedback report. Perform this work on a background thread.
 ```
     String productAccessToken = "YOUR_PRODUCT_ACCESS_TOKEN"; // see https://inventiv.io/critic/critic-integration-getting-started/ for details.
