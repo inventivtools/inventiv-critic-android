@@ -4,19 +4,25 @@
 This library uses Retrofit and the Gson Retrofit Converter.
 
 ## Installation
-1. Download this repository to your local filesystem.
-2. Add the Critic library to your `settings.gradle` file.
+1. Add the Inventiv repository to your `build.gradle` file's list of repositories.
 ```
-    include ':critic'
-    project(':critic').projectDir = new File('/YOUR_PATH_TO/inventiv-critic-android/library')
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://repo.inventiv.io/' }
+    }
+}
 ```
-3. Add the following dependencies to your application's `app/build.gradle` file.
+2. Add the following dependencies to your application's `app/build.gradle` file.
 ```
     dependencies {
-        compile ':critic'
+        compile 'io.inventiv.critic.android:critic-android:0.0.3@aar'
+        compile 'com.squareup.retrofit2:retrofit:2.3.0'
+        compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     }
 ```
-4. Add the INTERNET permission to your applications `app/src/main/AndroidManifest.xml` file.
+3. Add the INTERNET permission to your applications `app/src/main/AndroidManifest.xml` file.
 ```
 <uses-permission android:name="android.permission.INTERNET" />
 ```

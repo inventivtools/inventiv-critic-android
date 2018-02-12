@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.inventiv.critic.android</groupId>
+    <artifactId>critic-android</artifactId>
+    <version>0.0.3</version>
+    <organization>
+        <name>Inventiv</name>
+        <url>https://inventiv.io/</url>
+    </organization>
+    <name>Inventiv Critic Android Library</name>
+    <description>Android Library for building integrations with Inventiv Critic.</description>
+    <packaging>aar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+    </dependencies>
+    <build>
+    </build>
+    <properties>
+    </properties>
+</project>
