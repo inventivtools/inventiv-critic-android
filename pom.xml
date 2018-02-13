@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.inventiv.critic.android</groupId>
     <artifactId>critic-android</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
     <organization>
         <name>Inventiv</name>
         <url>https://inventiv.io/</url>
