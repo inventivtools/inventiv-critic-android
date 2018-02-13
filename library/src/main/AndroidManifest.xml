@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.inventiv.critic">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
+
     <application>
         <activity android:name=".FeedbackReportActivity"></activity>
     </application>

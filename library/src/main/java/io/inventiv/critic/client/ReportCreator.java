@@ -1,6 +1,7 @@
 package io.inventiv.critic.client;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 import io.inventiv.critic.Critic;
 import io.inventiv.critic.model.Report;
+import io.inventiv.critic.util.Logs;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -36,6 +38,18 @@ public class ReportCreator {
         parts.add( MultipartBody.Part.createFormData("report[product_access_token]", Critic.getProductAccessToken() ) );
         parts.add( MultipartBody.Part.createFormData("report[description]", description() ) );
         parts.add( MultipartBody.Part.createFormData("report[metadata]", metadata().toString() ) );
+
+        try {
+            File logcat = Logs.readLogcat(context);
+            if(logcat != null) {
+                if(attachments() == null) {
+                    attachments(new ArrayList<File>());
+                }
+                attachments().add(logcat);
+            }
+        } catch(IOException e) {
+            Log.e(ReportCreator.class.getSimpleName(), "Could not read from logcat!", e);
+        }
 
         try {
             if (attachments() != null && attachments().size() > 0) {

@@ -20,9 +20,10 @@ allprojects {
         implementation 'io.inventiv.critic.android:critic-android:0.0.6'
     }
 ```
-3. Add the INTERNET permission to your application's `app/src/main/AndroidManifest.xml` file.
+3. Add the following permissions to your application's `app/src/main/AndroidManifest.xml` file.
 ```
 <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
 ```
 4. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details.
 5. Initialize Critic by starting it from the `onCreate()` method of your main Application class.
