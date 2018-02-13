@@ -1,5 +1,7 @@
 # Inventiv Critic Android Library
 
+Use this library to add [Inventiv Critic](https://inventiv.io/critic/) to your Android app.
+
 ## Installation
 1. Add the Inventiv repository to your `build.gradle` file.
 ```
