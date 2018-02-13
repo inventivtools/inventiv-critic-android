@@ -17,28 +17,40 @@ allprojects {
 2. Add the following dependencies to your application's `app/build.gradle` file.
 ```
     dependencies {
-        compile 'io.inventiv.critic.android:critic-android:0.0.5@aar'
-        compile 'com.squareup.retrofit2:retrofit:2.3.0'
-        compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+        implementation 'io.inventiv.critic.android:critic-android:0.0.6'
     }
 ```
 3. Add the INTERNET permission to your application's `app/src/main/AndroidManifest.xml` file.
 ```
 <uses-permission android:name="android.permission.INTERNET" />
 ```
+4. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details.
+5. Initialize Critic by starting it from the `onCreate()` method of your main Application class.
+```
+public class MyApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Critic.initialize(this, "YOUR_PRODUCT_ACCESS_TOKEN");
+    }
+}
+```
 
 ## Sending Customer Feedback Reports Using the Default Screen
-1. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details.
-2. Use the Product Access Token to invoke the default feedback report screen.
+1. Enable shake detection in your main Application class to show a feedback report screen when the user shakes their device.
 ```
-    ReportCreator.showDefaultActivity(YourActivity.this, "YOUR_PRODUCT_ACCESS_TOKEN");
+    // do this after you call Critic.initialize(this, "YOUR_PRODUCT_ACCESS_TOKEN);
+    Critic.startShakeDetection();
+```
+2. Alternatively, you can show the default feedback report screen any time you like by calling the following method.
+```
+    Critic.showFeedbackReportActivity();
 ```
 
 ## Sending Customer Feedback Reports Your Own Way
-1. Acquire a Product Access Token from the [Critic Web Portal](https://critic.inventiv.io/products) by viewing a Product's details. 
-2. Use the Product Access Token to submit a feedback report. Perform this work on a background thread.
+1. Use the Product Access Token to submit a feedback report. Perform this work on a background thread.
 ```
-    String productAccessToken = "YOUR_PRODUCT_ACCESS_TOKEN"; // see https://inventiv.io/critic/critic-integration-getting-started/ for details.
     String description = "Text provided by your user.";
 
     JsonObject metadata = new JsonObject();
@@ -50,40 +62,12 @@ allprojects {
     files.add(new File("/path/to/another/file/to/attach"));
     
     Report report = new ReportCreator()
-        .productAccessToken(productAccessToken)
         .description(description)
         .metadata(metadata)
         .attachments(files)
-    .create(); // throws a ReportCreationException if something went wrong.
+    .create(mContext); // mContext is a Context object such as your current Activity.
 ```
 3. The `ReportCreator.create()` call will return a Report object if successful. Otherwise, a `ReportCreationException` will be thrown.
-
-## General Usage
-1. Authenticate using the provided `Client` class.
-```
-    if( Client.authenticate("me@example.com", "my super secret password") ) {
-        // Authentication successful! Now you can make service calls.
-    }
-    else {
-        // Authentication failure. Check your credentials and Internet connectivity, and then try again.
-    }
-```
-2. Send web requests from a background thread using the Retrofit helper methods in the `Client` class. This will fail if you have not authenticated during the current user session / application lifecycle.
-```
-    Call<User> userCall = Client.userService().profile();
-    try {
-        Response<User> userResponse = userCall.execute();
-        System.out.println("user response: " + userResponse.body().getEmail());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-```
-3. If you choose to store the `Client.getAuthenticationToken()` value for use in later sessions (e.g., "Remember Me" functionality), please store it in a secure/encrypted location.
-
-If you do choose to store the authentication token for later sessions, remember to set the token in the Client before executing other web requests.
-```
-    Client.setAuthorizationToken("Bearer eyJhbGciOi...");
-```
 
 ## License
 This library is released under the MIT License.

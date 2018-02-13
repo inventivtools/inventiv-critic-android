@@ -1,7 +1,6 @@
 package io.inventiv.critic.client;
 
 import android.content.Context;
-import android.content.Intent;
 
 import com.google.gson.JsonObject;
 
@@ -10,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.inventiv.critic.FeedbackReportActivity;
+import io.inventiv.critic.Critic;
 import io.inventiv.critic.model.Report;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -19,45 +18,39 @@ import retrofit2.Response;
 
 public class ReportCreator {
 
-    private String productAccessToken;
     private String description;
     private JsonObject metadata;
     private List<File> attachments;
 
-    public static void showDefaultActivity(Context context, String productAccessToken) {
-        Intent intent = new Intent(context, FeedbackReportActivity.class);
-        intent.putExtra("productAccessToken", productAccessToken);
-        context.startActivity(intent);
-    }
-
-    public Report create() throws ReportCreationException {
-
-        if(productAccessToken() == null || productAccessToken().length() == 0 || productAccessToken().equals("YOUR_PRODUCT_ACCESS_TOKEN")) {
-            throw new AssertionError("You need to provide a valid Product Access Token to create a Report. See the Critic Getting Started Guide at https://inventiv.io/critic/critic-integration-getting-started/.");
-        }
+    public Report create(Context context) throws ReportCreationException {
 
         if(description() == null || description().length() == 0) {
             throw new AssertionError("You need to provide a description to continue.");
         }
-
         if(metadata() == null) {
             metadata(new JsonObject());
         }
+        Critic.addStandardMetadata(metadata());
 
         List<MultipartBody.Part> parts = new ArrayList();
-        parts.add( MultipartBody.Part.createFormData("report[product_access_token]", productAccessToken() ) );
+        parts.add( MultipartBody.Part.createFormData("report[product_access_token]", Critic.getProductAccessToken() ) );
         parts.add( MultipartBody.Part.createFormData("report[description]", description() ) );
         parts.add( MultipartBody.Part.createFormData("report[metadata]", metadata().toString() ) );
 
-        if(attachments() != null && attachments().size() > 0 ) {
-            for (File file : attachments()) {
-                String filename = file.getName();
-                String contentType = "text/plain";
-                if (filename.endsWith("bmp") || filename.endsWith("jpeg") || filename.endsWith("jpg") || filename.endsWith("png")) {
-                    contentType = "image/*";
+        try {
+            if (attachments() != null && attachments().size() > 0) {
+                for (File file : attachments()) {
+                    String filename = file.getName();
+                    String contentType = "text/plain";
+                    if (filename.endsWith("bmp") || filename.endsWith("jpeg") || filename.endsWith("jpg") || filename.endsWith("png")) {
+                        contentType = "image/*";
+                    }
+                    parts.add(MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)));
                 }
-                parts.add(MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)));
             }
+        }
+        catch(Exception e){
+            throw new ReportCreationException("Encountered a problem attaching files: " + e.getMessage(), e);
         }
 
         Report report = null;
@@ -77,16 +70,6 @@ public class ReportCreator {
         }
 
         return report;
-    }
-
-
-    String productAccessToken() {
-        return productAccessToken;
-    }
-
-    public ReportCreator productAccessToken(String productAccessToken) {
-        this.productAccessToken = productAccessToken;
-        return this;
     }
 
     String description() {

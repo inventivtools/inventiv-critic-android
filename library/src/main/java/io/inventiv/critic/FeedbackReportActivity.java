@@ -43,7 +43,7 @@ public class FeedbackReportActivity extends AppCompatActivity {
             throw new AssertionError("You must pass an Intent with a 'productAccessToken' extra!");
         }
 
-        String productAccessToken = intent.getStringExtra("productAccessToken");
+        String productAccessToken = intent.getStringExtra(Critic.INTENT_EXTRA_PRODUCT_ACCESS_TOKEN);
         if(productAccessToken == null) {
             throw new AssertionError("You must pass a 'productAccessToken' extra with your Intent!");
         }
@@ -144,16 +144,14 @@ public class FeedbackReportActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-                JsonObject metadataJson = new JsonObject();
-                metadataJson.addProperty("report_screen", FeedbackReportActivity.class.getCanonicalName());
+            JsonObject metadataJson = new JsonObject();
+            metadataJson.addProperty("report_screen", FeedbackReportActivity.class.getCanonicalName());
 
             try {
                 Report report = new ReportCreator()
-                        .productAccessToken(getProductAccessToken())
                         .description(mDescription)
                         .metadata(metadataJson)
-                        .create();
-
+                .create(FeedbackReportActivity.this);
                 System.out.println( "new report created: " + report.getDescription() );
             } catch (ReportCreator.ReportCreationException e) {
                 e.printStackTrace();

@@ -14,10 +14,19 @@ final class ClientRequestInterceptor implements Interceptor {
         Request originalRequest = chain.request();
         Request.Builder requestBuilder = originalRequest.newBuilder();
 
-        // send an Authorization header if Client.getAuthorizationToken() exists.
-        String authorizationToken = Client.getAuthorizationToken();
-        if( authorizationToken != null && authorizationToken.length() > 0 ) {
-            requestBuilder.addHeader("Authorization", authorizationToken );
+        String accept = originalRequest.header("Accept");
+        if(accept == null || accept.length() == 0) {
+            requestBuilder.addHeader("Accept", "application/json");
+        }
+
+        String contentType = originalRequest.header("Content-Type");
+        if(contentType == null || contentType.length() == 0) {
+            requestBuilder.addHeader("Content-Type", "application/json");
+        }
+
+        String userAgent = originalRequest.header("User-Agent");
+        if(userAgent == null || userAgent.length() == 0) {
+            requestBuilder.addHeader("User-Agent", Configuration.USER_AGENT);
         }
 
         return chain.proceed(requestBuilder.build());
