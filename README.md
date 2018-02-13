@@ -14,7 +14,7 @@ allprojects {
     }
 }
 ```
-2. Add the following dependencies to your application's `app/build.gradle` file.
+2. Add the following dependency to your application's `app/build.gradle` file.
 ```
     dependencies {
         implementation 'io.inventiv.critic.android:critic-android:0.0.6'
