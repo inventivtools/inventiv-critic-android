@@ -68,7 +68,7 @@ public class MyApplication extends Application {
         .attachments(files)
     .create(mContext); // mContext is a Context object such as your current Activity.
 ```
-3. The `ReportCreator.create()` call will return a Report object if successful. Otherwise, a `ReportCreationException` will be thrown.
+2. The `ReportCreator.create()` call will return a Report object if successful. Otherwise, a `ReportCreationException` will be thrown.
 
 ## License
 This library is released under the MIT License.
