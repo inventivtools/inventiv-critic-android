@@ -41,7 +41,7 @@ public class MyApplication extends Application {
 ## Sending Customer Feedback Reports Using the Default Screen
 1. Enable shake detection in your main Application class to show a feedback report screen when the user shakes their device.
 ```
-    // do this after you call Critic.initialize(this, "YOUR_PRODUCT_ACCESS_TOKEN);
+    // do this after you call Critic.initialize(this, "YOUR_PRODUCT_ACCESS_TOKEN");
     Critic.startShakeDetection();
 ```
 2. Alternatively, you can show the default feedback report screen any time you like by calling the following method.
