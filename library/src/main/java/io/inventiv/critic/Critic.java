@@ -109,19 +109,9 @@ public final class Critic {
     private static void addDeviceMetadata(JsonObject metadata) {
 
         JsonObject build = new JsonObject();
-        build.addProperty("board", Build.BOARD);
-        build.addProperty("bootloader", Build.BOOTLOADER);
-        build.addProperty("brand", Build.BRAND);
-        build.addProperty("device", Build.DEVICE);
-        build.addProperty("display", Build.DISPLAY);
         build.addProperty("fingerprint", Build.FINGERPRINT);
-        build.addProperty("hardware", Build.HARDWARE);
         build.addProperty("manufacturer", Build.MANUFACTURER);
         build.addProperty("model", Build.MODEL);
-        build.addProperty("product", Build.PRODUCT);
-        build.addProperty("tags", Build.TAGS);
-        build.addProperty("time", Build.TIME);
-        build.addProperty("type", Build.TYPE);
         build.addProperty("version", Build.VERSION.RELEASE);
 
         JsonObject device = new JsonObject();
