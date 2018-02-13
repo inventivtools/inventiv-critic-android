@@ -1,7 +1,11 @@
 package io.inventiv.critic;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
@@ -10,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.squareup.seismic.ShakeDetector;
@@ -18,7 +24,8 @@ public final class Critic {
     public static final String INTENT_EXTRA_PRODUCT_ACCESS_TOKEN = "productAccessToken";
 
     private static JsonObject mBatteryJson = new JsonObject();
-    private static Context mContext;
+    private static Application mContext;
+    private static ApplicationLifecycleTracker mApplicationLifecycleTracker = new ApplicationLifecycleTracker();
     private static String mProductAccessToken;
     private static ShakeDetector mShakeDetector;
 
@@ -26,7 +33,7 @@ public final class Critic {
         // stop external invocation.
     }
 
-    public static void initialize(Context context, String productAccessToken) {
+    public static void initialize(Application context, String productAccessToken) {
 
         if(productAccessToken == null || productAccessToken.length() == 0) {
             throw new AssertionError("You need to provide a Product Access Token to create a Report. See the Critic Getting Started Guide at https://inventiv.io/critic/critic-integration-getting-started/.");
@@ -37,10 +44,17 @@ public final class Critic {
 
         Critic.mContext = context;
         Critic.mProductAccessToken = productAccessToken;
+
+        mContext.registerActivityLifecycleCallbacks(mApplicationLifecycleTracker);
         registerBatteryBroadcastReceiver();
     }
 
     public static void startShakeDetection() {
+
+        if(mShakeDetector != null ) {
+            // already detecting shakes.
+            return;
+        }
 
         SensorManager sensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mShakeDetector = new ShakeDetector(new Shakes());
@@ -173,10 +187,100 @@ public final class Critic {
 
     private static class Shakes implements ShakeDetector.Listener {
 
+        boolean mAlreadyShaken = false;
+
         @Override
         public void hearShake() {
 
-            Critic.showFeedbackReportActivity();
+            if(mApplicationLifecycleTracker.mCurrentActivity == null) {
+                Log.w(Critic.class.getSimpleName(), "No current activity! Can not handle shake.");
+                return;
+            }
+
+            if(mApplicationLifecycleTracker.mCurrentDialog != null) {
+                Log.w(Critic.class.getSimpleName(), "Shaken repeatedly. Ignoring.");
+                return;
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(mApplicationLifecycleTracker.mCurrentActivity)
+                    .setTitle("Easy, easy!")
+                    .setMessage("Do you want to send us feedback?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Critic.showFeedbackReportActivity();
+                            mAlreadyShaken = false;
+                            mApplicationLifecycleTracker.mCurrentDialog = null;
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mAlreadyShaken = false;
+                            mApplicationLifecycleTracker.mCurrentDialog = null;
+                        }
+                    }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            mAlreadyShaken = false;
+                            mApplicationLifecycleTracker.mCurrentDialog = null;
+                        }
+                    });
+
+            if(Build.VERSION.SDK_INT >= 17){
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        mAlreadyShaken = false;
+                        mApplicationLifecycleTracker.mCurrentDialog = null;
+                    }
+                });
+            }
+
+            mApplicationLifecycleTracker.mCurrentDialog = builder.create();
+            mApplicationLifecycleTracker.mCurrentDialog.show();
+        }
+    }
+
+    private static class ApplicationLifecycleTracker implements Application.ActivityLifecycleCallbacks {
+
+        Activity mCurrentActivity;
+        AlertDialog mCurrentDialog;
+
+        @Override
+        public void onActivityCreated(Activity activity, Bundle bundle) {
+            // do nothing.
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+            // do nothing.
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+            mCurrentActivity = null;
+            mCurrentDialog = null;
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+            mCurrentActivity = activity;
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+            // do nothing.
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+            // do nothing.
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+            // do nothing.
         }
     }
 }
