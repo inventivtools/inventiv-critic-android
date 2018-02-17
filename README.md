@@ -50,7 +50,7 @@ Critic.showFeedbackReportActivity();
 ```
 
 ## Customizing Feedback Reports
-Use the Product Access Token to submit a feedback report. Perform this work on a background thread.
+Use the `ReportCreator` to build your own reports for custom user experiences or other use cases. Perform `ReportCreator` work on a background thread.
 ```
 String description = "Text provided by your user.";
 
