@@ -145,7 +145,6 @@ public class FeedbackReportActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
 
             JsonObject metadataJson = new JsonObject();
-            metadataJson.addProperty("report_screen", FeedbackReportActivity.class.getCanonicalName());
 
             try {
                 Report report = new ReportCreator()

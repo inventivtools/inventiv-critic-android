@@ -16,7 +16,7 @@ allprojects {
 2. Add the following dependency to your `app/build.gradle` file.
 ```
     dependencies {
-        implementation 'io.inventiv.critic.android:critic-android:0.0.8'
+        implementation 'io.inventiv.critic.android:critic-android:0.0.9'
     }
 ```
 3. Find your Product Access Token in the [Critic Web Portal](https://critic.inventiv.io/products) by viewing your Product's details.
