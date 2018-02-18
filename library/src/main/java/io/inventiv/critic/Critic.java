@@ -1,6 +1,8 @@
 package io.inventiv.critic;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -8,17 +10,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.squareup.seismic.ShakeDetector;
+
+import java.io.File;
+import java.util.UUID;
 
 public final class Critic {
     public static final String INTENT_EXTRA_PRODUCT_ACCESS_TOKEN = "productAccessToken";
@@ -109,16 +120,80 @@ public final class Critic {
     private static void addDeviceMetadata(JsonObject metadata) {
 
         JsonObject build = new JsonObject();
-        build.addProperty("fingerprint", Build.FINGERPRINT);
         build.addProperty("manufacturer", Build.MANUFACTURER);
         build.addProperty("model", Build.MODEL);
         build.addProperty("version", Build.VERSION.RELEASE);
 
+        File externalStorageDirectory = Environment.getExternalStorageDirectory();
+
+        JsonObject disk = new JsonObject();
+        disk.addProperty("external_storage_directory", externalStorageDirectory.getAbsolutePath());
+        disk.addProperty("free", externalStorageDirectory.getFreeSpace());
+        disk.addProperty("total", externalStorageDirectory.getTotalSpace());
+        disk.addProperty("usable", externalStorageDirectory.getUsableSpace());
+
+        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+
+        JsonObject memory = new JsonObject();
+        memory.addProperty("free", memoryInfo.availMem);
+        memory.addProperty("is_low", memoryInfo.lowMemory);
+        memory.addProperty("threshold", memoryInfo.threshold);
+        memory.addProperty("total", memoryInfo.totalMem);
+
+        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        String carrierName = telephonyManager.getNetworkOperatorName();
+        if(carrierName == null || carrierName.length() == 0) {
+            carrierName = "N/A";
+        }
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = null;
+        if(PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_NETWORK_STATE)) {
+            networkInfo = connectivityManager.getActiveNetworkInfo();
+        }
+        else {
+            Log.w(Critic.class.getName(), "ACCESS_NETWORK_STATE is not granted. Can not retrieve NetworkInfo.");
+        }
+
+        JsonObject network = new JsonObject();
+        network.addProperty("carrier_name", carrierName);
+        network.addProperty("cell_connected", (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE));
+        network.addProperty("wifi_connected", (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI));
+
         JsonObject device = new JsonObject();
         device.add("battery", mBatteryJson);
         device.add("build", build);
-        device.addProperty("platform", "android");
+        device.add("disk", disk);
+        device.addProperty("identifier", Critic.getApplicationInstanceID());
+        device.add("memory", memory);
+        device.add("network", network);
+        device.addProperty("platform", "Android");
+//        device.add("processors", processors); TODO
         metadata.add("ic_device", device);
+    }
+
+    /**
+     * Make up a unique ID for the application instance. This is useful for tracking report activity across a singular application install.
+     * If the user deletes the app and reinstalls later, this ID will change. It only persists as long as the app remains installed.
+     *
+     * @return a unique ID for the application instance.
+     */
+    private synchronized static String getApplicationInstanceID() {
+
+        final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+
+        SharedPreferences preferences = mContext.getSharedPreferences(PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+        String uniqueId = preferences.getString(PREF_UNIQUE_ID, null);
+        if(uniqueId == null) {
+            uniqueId = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(PREF_UNIQUE_ID, uniqueId);
+            editor.commit();
+        }
+
+        return uniqueId;
     }
 
     private static void registerBatteryBroadcastReceiver() {

@@ -16,16 +16,11 @@ allprojects {
 2. Add the following dependency to your `app/build.gradle` file.
 ```
     dependencies {
-        implementation 'io.inventiv.critic.android:critic-android:0.0.7'
+        implementation 'io.inventiv.critic.android:critic-android:0.0.8'
     }
 ```
-3. Add the following permissions to your `app/src/main/AndroidManifest.xml` file.
-```
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="18" />
-```
-4. Find your Product Access Token in the [Critic Web Portal](https://critic.inventiv.io/products) by viewing your Product's details.
-5. Initialize Critic by starting it from the `onCreate()` method of your main Application class.
+3. Find your Product Access Token in the [Critic Web Portal](https://critic.inventiv.io/products) by viewing your Product's details.
+4. Initialize Critic by starting it from the `onCreate()` method of your main Application class.
 ```
 public class MyApplication extends Application {
 

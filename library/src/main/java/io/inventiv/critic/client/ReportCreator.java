@@ -2,6 +2,7 @@ package io.inventiv.critic.client;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonObject;
 
@@ -55,10 +56,22 @@ public class ReportCreator {
             if (attachments() != null && attachments().size() > 0) {
                 for (File file : attachments()) {
                     String filename = file.getName();
-                    String contentType = "text/plain";
-                    if (filename.endsWith("bmp") || filename.endsWith("jpeg") || filename.endsWith("jpg") || filename.endsWith("png")) {
-                        contentType = "image/*";
+
+                    // determine Content-Type to send for file.
+                    String contentType = null;
+                    final String extension = filename.substring(filename.lastIndexOf("."));
+                    if (extension != null) {
+                        contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
                     }
+                    if (contentType == null) {
+                        if("log".equalsIgnoreCase(extension)) {
+                            contentType = "text/plain";
+                        }
+                        else {
+                            contentType = "*/*";
+                        }
+                    }
+
                     parts.add(MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)));
                 }
             }
