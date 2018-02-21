@@ -2,6 +2,8 @@
 
 Use this library to add [Inventiv Critic](https://inventiv.io/critic/) to your Android app.
 
+![Critic Android default feedback screen](https://assets.inventiv.io/github/inventiv-critic-android/critic-android-half-shot-feedback-screen.png)
+
 ## Installation
 1. Add the Inventiv repository to your `build.gradle` file.
 ```
@@ -65,6 +67,11 @@ Report report = new ReportCreator()
 ```
 
 The `ReportCreator.create()` call will return a Report object if successful. Otherwise, a `ReportCreationException` will be thrown.
+## Viewing Feedback Reports
+Visit the [Critic web portal](https://critic.inventiv.io/) to view submitted reports. Below is some of the device and app-specific information included with every Android report.
+
+![Critic Android app info as view in the web portal](https://assets.inventiv.io/github/inventiv-critic-android/critic-android-app-info.png)
+![Critic Android device info as view in the web portal](https://assets.inventiv.io/github/inventiv-critic-android/critic-android-device-info.png)
 
 ## License
 This library is released under the MIT License.
