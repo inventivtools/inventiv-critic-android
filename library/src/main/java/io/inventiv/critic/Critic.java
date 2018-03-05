@@ -58,6 +58,7 @@ public final class Critic {
 
         mContext.registerActivityLifecycleCallbacks(mApplicationLifecycleTracker);
         registerBatteryBroadcastReceiver();
+        startShakeDetection();
     }
 
     public static void startShakeDetection() {

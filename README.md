@@ -18,7 +18,7 @@ allprojects {
 2. Add the following dependency to your `app/build.gradle` file.
 ```
     dependencies {
-        implementation 'io.inventiv.critic.android:critic-android:0.0.9'
+        implementation 'io.inventiv.critic.android:critic-android:0.0.10'
     }
 ```
 3. Find your Product Access Token in the [Critic Web Portal](https://critic.inventiv.io/products) by viewing your Product's details.
@@ -35,10 +35,10 @@ public class MyApplication extends Application {
 ```
 
 ## Sending Customer Feedback Reports
-Enable shake detection in your main Application class to show a feedback report screen when the user shakes their device.
+By default, Critic will prompt your users for feedback when they shake their device. You can disable this if desired.
 ```
 // do this after you call Critic.initialize(this, "YOUR_PRODUCT_ACCESS_TOKEN");
-Critic.startShakeDetection();
+Critic.stopShakeDetection();
 ```
 
 Alternatively, you can show the default feedback report screen any time you like by calling the following method.
