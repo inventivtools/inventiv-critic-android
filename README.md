@@ -46,7 +46,7 @@ Alternatively, you can show the default feedback report screen any time you like
 Critic.showFeedbackReportActivity();
 ```
 
-If you are using the default feedback report screen, you can add product-specific metadata through the `Critic.setProductMetadata(JsonObject)` method.
+You can add product-specific metadata through the `Critic.setProductMetadata(JsonObject)` method.
 ```
 JsonObject productMetadata = new JsonObject();
 productMetadata.addProperty("email", "test@example.com");
