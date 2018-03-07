@@ -25,19 +25,23 @@ import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.squareup.seismic.ShakeDetector;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public final class Critic {
     public static final String INTENT_EXTRA_PRODUCT_ACCESS_TOKEN = "productAccessToken";
 
+    private static ApplicationLifecycleTracker mApplicationLifecycleTracker = new ApplicationLifecycleTracker();
     private static JsonObject mBatteryJson = new JsonObject();
     private static Application mContext;
-    private static ApplicationLifecycleTracker mApplicationLifecycleTracker = new ApplicationLifecycleTracker();
     private static String mProductAccessToken;
+    private static JsonObject mProductMetadata = new JsonObject();
     private static ShakeDetector mShakeDetector;
 
     private Critic() {
@@ -93,6 +97,32 @@ public final class Critic {
     public static void addStandardMetadata(JsonObject metadata) {
         addApplicationMetadata(metadata);
         addDeviceMetadata(metadata);
+        addProductMetadata(metadata);
+    }
+
+    public static void setProductMetadata(JsonObject productMetadata) {
+        Critic.mProductMetadata = productMetadata;
+    }
+
+    private static void addProductMetadata(JsonObject metadata) {
+        if(Critic.mProductMetadata == null || Critic.mProductMetadata.isJsonNull() || Critic.mProductMetadata.size() == 0) {
+            // ignore empty product metadata.
+            return;
+        }
+
+        Set<Map.Entry<String, JsonElement>> entrySet = Critic.mProductMetadata.entrySet();
+        if(entrySet.size() > 0) {
+
+            for (Map.Entry<String, JsonElement> entry : entrySet) {
+
+                String key = entry.getKey();
+                JsonElement value = entry.getValue();
+                if("ic_application".equalsIgnoreCase(key) || "ic_device".equalsIgnoreCase(key)) {
+                    throw new AssertionError("You specified a product metadata key of [" + key + "], which is a reserved key. Please choose something that does not start with [ic_].");
+                }
+                metadata.add(key, value);
+            }
+        }
     }
 
     private static void addApplicationMetadata(JsonObject metadata) {

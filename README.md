@@ -18,7 +18,7 @@ allprojects {
 2. Add the following dependency to your `app/build.gradle` file.
 ```
     dependencies {
-        implementation 'io.inventiv.critic.android:critic-android:0.0.10'
+        implementation 'io.inventiv.critic.android:critic-android:0.0.11'
     }
 ```
 3. Find your Product Access Token in the [Critic Web Portal](https://critic.inventiv.io/products) by viewing your Product's details.
@@ -44,6 +44,13 @@ Critic.stopShakeDetection();
 Alternatively, you can show the default feedback report screen any time you like by calling the following method.
 ```
 Critic.showFeedbackReportActivity();
+```
+
+If you are using the default feedback report screen, you can add product-specific metadata through the `Critic.setProductMetadata(JsonObject)` method.
+```
+JsonObject productMetadata = new JsonObject();
+productMetadata.addProperty("email", "test@example.com");
+Critic.setProductMetadata(productMetadata);
 ```
 
 ## Customizing Feedback Reports
