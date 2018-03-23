@@ -12,33 +12,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.inventiv.critic.Critic;
-import io.inventiv.critic.model.Report;
+import io.inventiv.critic.model.BugReport;
 import io.inventiv.critic.util.Logs;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Response;
 
-public class ReportCreator {
+public class BugReportCreator {
 
     private String description;
     private JsonObject metadata;
     private List<File> attachments;
 
-    public Report create(Context context) throws ReportCreationException {
+    public BugReport create(Context context) throws ReportCreationException {
 
         if(description() == null || description().length() == 0) {
             throw new AssertionError("You need to provide a description to continue.");
         }
-        if(metadata() == null) {
-            metadata(new JsonObject());
+
+        JsonObject metadata = Critic.getProductMetadata();
+        if(metadata == null) {
+            metadata = new JsonObject();
         }
-        Critic.addStandardMetadata(metadata());
 
         List<MultipartBody.Part> parts = new ArrayList();
-        parts.add( MultipartBody.Part.createFormData("report[product_access_token]", Critic.getProductAccessToken() ) );
-        parts.add( MultipartBody.Part.createFormData("report[description]", description() ) );
-        parts.add( MultipartBody.Part.createFormData("report[metadata]", metadata().toString() ) );
+        parts.add( MultipartBody.Part.createFormData("api_token", Critic.getProductAccessToken() ) );
+        parts.add( MultipartBody.Part.createFormData("app_install[id]", Long.toString( Critic.getAppInstallId() ) ) );
+        parts.add( MultipartBody.Part.createFormData("bug_report[description]", description() ) );
+        parts.add( MultipartBody.Part.createFormData("bug_report[metadata]", metadata.toString() ) );
+        parts.add( MultipartBody.Part.createFormData("device_status",Critic.getDeviceStatusJson().toString() ) );
 
         try {
             File logcat = Logs.readLogcat(context);
@@ -49,7 +52,7 @@ public class ReportCreator {
                 attachments().add(logcat);
             }
         } catch(IOException e) {
-            Log.e(ReportCreator.class.getSimpleName(), "Could not read from logcat!", e);
+            Log.e(BugReportCreator.class.getSimpleName(), "Could not read from logcat!", e);
         }
 
         try {
@@ -72,7 +75,7 @@ public class ReportCreator {
                         }
                     }
 
-                    parts.add(MultipartBody.Part.createFormData("report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)));
+                    parts.add(MultipartBody.Part.createFormData("bug_report[attachments][]", file.getName(), RequestBody.create(MediaType.parse(contentType), file)));
                 }
             }
         }
@@ -80,40 +83,31 @@ public class ReportCreator {
             throw new ReportCreationException("Encountered a problem attaching files: " + e.getMessage(), e);
         }
 
-        Report report = null;
+        BugReport bugReport = null;
         try {
-            Response<Report> reportResponse = Client.reportService().create(parts).execute();
+            Response<BugReport> reportResponse = Client.bugReportService().create(parts).execute();
             if(reportResponse.code() != 201) {
                 throw new ReportCreationException("Invalid response code: " + reportResponse.code());
             }
-            report = reportResponse.body();
+            bugReport = reportResponse.body();
         } catch (IOException e) {
             throw new ReportCreationException("Invalid response from server: " + e.getMessage(), e);
 
         }
 
-        if(report == null) {
+        if(bugReport == null) {
             throw new ReportCreationException("No report returned from server.");
         }
 
-        return report;
+        return bugReport;
     }
 
     String description() {
         return description;
     }
 
-    public ReportCreator description(String description) {
+    public BugReportCreator description(String description) {
         this.description = description;
-        return this;
-    }
-
-    JsonObject metadata() {
-        return metadata;
-    }
-
-    public ReportCreator metadata(JsonObject metadata) {
-        this.metadata = metadata;
         return this;
     }
 
@@ -121,7 +115,7 @@ public class ReportCreator {
         return attachments;
     }
 
-    public ReportCreator attachments(List<File> attachments) {
+    public BugReportCreator attachments(List<File> attachments) {
         this.attachments = attachments;
         return this;
     }

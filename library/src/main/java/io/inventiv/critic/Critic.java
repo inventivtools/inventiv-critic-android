@@ -34,10 +34,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import io.inventiv.critic.client.PingCreator;
+
 public final class Critic {
     public static final String INTENT_EXTRA_PRODUCT_ACCESS_TOKEN = "productAccessToken";
 
     private static ApplicationLifecycleTracker mApplicationLifecycleTracker = new ApplicationLifecycleTracker();
+    private static Long mAppInstallId;
     private static JsonObject mBatteryJson = new JsonObject();
     private static Application mContext;
     private static String mProductAccessToken;
@@ -63,6 +66,8 @@ public final class Critic {
         mContext.registerActivityLifecycleCallbacks(mApplicationLifecycleTracker);
         registerBatteryBroadcastReceiver();
         startShakeDetection();
+
+        new PingCreator().create(mContext);
     }
 
     public static void startShakeDetection() {
@@ -90,18 +95,113 @@ public final class Critic {
         mContext.startActivity(intent);
     }
 
+    public static Long getAppInstallId() {
+        return Critic.mAppInstallId;
+    }
+
+    public static void setAppInstallId(Long appInstallId) {
+        Critic.mAppInstallId = appInstallId;
+    }
+
     public static String getProductAccessToken() {
         return mProductAccessToken;
     }
 
-    public static void addStandardMetadata(JsonObject metadata) {
-        addApplicationMetadata(metadata);
-        addDeviceMetadata(metadata);
-        addProductMetadata(metadata);
+    public static JsonObject getProductMetadata() {
+        return Critic.mProductMetadata;
     }
 
     public static void setProductMetadata(JsonObject productMetadata) {
         Critic.mProductMetadata = productMetadata;
+    }
+
+    public static JsonObject getAppJson() {
+
+
+        JsonObject app = new JsonObject();
+
+        ApplicationInfo applicationInfo = mContext.getApplicationInfo();
+        int stringId = applicationInfo.labelRes;
+        String applicationName = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : mContext.getString(stringId);
+        app.addProperty("name", applicationName);
+
+        String packageName = mContext.getPackageName();
+        app.addProperty("package", packageName);
+        app.addProperty("platform", "Android");
+
+        try {
+            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(packageName, 0);
+
+            JsonObject version = new JsonObject();
+            version.addProperty("code", packageInfo.versionCode);
+            version.addProperty("name", packageInfo.versionName);
+            app.add("version", version);
+        } catch (PackageManager.NameNotFoundException e) {
+            // ignore.
+        }
+
+        return app;
+    }
+
+    public static JsonObject getDeviceJson() {
+
+
+        JsonObject build = new JsonObject();
+
+        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+        String carrierName = telephonyManager.getNetworkOperatorName();
+        if(carrierName == null || carrierName.length() == 0) {
+            carrierName = "N/A";
+        }
+
+        JsonObject device = new JsonObject();
+        device.addProperty("identifier", Critic.getApplicationInstanceID());
+        device.addProperty("manufacturer", Build.MANUFACTURER);
+        device.addProperty("model", Build.MODEL);
+        device.addProperty("network_carrier", carrierName);
+        device.addProperty("platform", "Android");
+        device.addProperty("platform_version", Build.VERSION.RELEASE);
+
+        return device;
+    }
+
+    public static JsonObject getDeviceStatusJson() {
+
+        JsonObject deviceStatus = new JsonObject();
+        if( mBatteryJson.get("charging_status") != null ) {
+            deviceStatus.addProperty("battery_charging", mBatteryJson.get("charging_status").getAsBoolean());
+        }
+        if( mBatteryJson.get("health") != null ) {
+            deviceStatus.addProperty("battery_health", mBatteryJson.get("health").getAsString());
+        }
+        if( mBatteryJson.get("percentage") != null ) {
+            deviceStatus.addProperty("battery_level", mBatteryJson.get("percentage").getAsFloat());
+        }
+
+        File externalStorageDirectory = Environment.getExternalStorageDirectory();
+        deviceStatus.addProperty("disk_free", externalStorageDirectory.getFreeSpace());
+        deviceStatus.addProperty("disk_total", externalStorageDirectory.getTotalSpace());
+        deviceStatus.addProperty("disk_usable", externalStorageDirectory.getUsableSpace());
+
+        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+
+        deviceStatus.addProperty("memory_free", memoryInfo.availMem);
+        deviceStatus.addProperty("memory_total", memoryInfo.totalMem);
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = null;
+        if(PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_NETWORK_STATE)) {
+            networkInfo = connectivityManager.getActiveNetworkInfo();
+        }
+        else {
+            Log.w(Critic.class.getName(), "ACCESS_NETWORK_STATE is not granted. Can not retrieve NetworkInfo.");
+        }
+        deviceStatus.addProperty("network_cell_connected", (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE));
+        deviceStatus.addProperty("network_wifi_connected", (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI));
+
+        return deviceStatus;
     }
 
     private static void addProductMetadata(JsonObject metadata) {
@@ -123,86 +223,6 @@ public final class Critic {
                 metadata.add(key, value);
             }
         }
-    }
-
-    private static void addApplicationMetadata(JsonObject metadata) {
-
-        JsonObject application = new JsonObject();
-
-        ApplicationInfo applicationInfo = mContext.getApplicationInfo();
-        int stringId = applicationInfo.labelRes;
-        String applicationName = stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : mContext.getString(stringId);
-        application.addProperty("name", applicationName);
-
-        String packageName = mContext.getPackageName();
-        application.addProperty("package", packageName);
-
-        try {
-            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(packageName, 0);
-            application.addProperty("version_code", packageInfo.versionCode);
-            application.addProperty("version_name", packageInfo.versionName);
-        } catch (PackageManager.NameNotFoundException e) {
-            // ignore.
-        }
-
-        metadata.add("ic_application", application);
-    }
-
-    private static void addDeviceMetadata(JsonObject metadata) {
-
-        JsonObject build = new JsonObject();
-        build.addProperty("manufacturer", Build.MANUFACTURER);
-        build.addProperty("model", Build.MODEL);
-        build.addProperty("version", Build.VERSION.RELEASE);
-
-        File externalStorageDirectory = Environment.getExternalStorageDirectory();
-
-        JsonObject disk = new JsonObject();
-        disk.addProperty("external_storage_directory", externalStorageDirectory.getAbsolutePath());
-        disk.addProperty("free", externalStorageDirectory.getFreeSpace());
-        disk.addProperty("total", externalStorageDirectory.getTotalSpace());
-        disk.addProperty("usable", externalStorageDirectory.getUsableSpace());
-
-        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-
-        JsonObject memory = new JsonObject();
-        memory.addProperty("free", memoryInfo.availMem);
-        memory.addProperty("is_low", memoryInfo.lowMemory);
-        memory.addProperty("threshold", memoryInfo.threshold);
-        memory.addProperty("total", memoryInfo.totalMem);
-
-        TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        String carrierName = telephonyManager.getNetworkOperatorName();
-        if(carrierName == null || carrierName.length() == 0) {
-            carrierName = "N/A";
-        }
-
-        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = null;
-        if(PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_NETWORK_STATE)) {
-            networkInfo = connectivityManager.getActiveNetworkInfo();
-        }
-        else {
-            Log.w(Critic.class.getName(), "ACCESS_NETWORK_STATE is not granted. Can not retrieve NetworkInfo.");
-        }
-
-        JsonObject network = new JsonObject();
-        network.addProperty("carrier_name", carrierName);
-        network.addProperty("cell_connected", (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE));
-        network.addProperty("wifi_connected", (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI));
-
-        JsonObject device = new JsonObject();
-        device.add("battery", mBatteryJson);
-        device.add("build", build);
-        device.add("disk", disk);
-        device.addProperty("identifier", Critic.getApplicationInstanceID());
-        device.add("memory", memory);
-        device.add("network", network);
-        device.addProperty("platform", "Android");
-//        device.add("processors", processors); TODO
-        metadata.add("ic_device", device);
     }
 
     /**

@@ -5,7 +5,8 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.inventiv.critic.service.ReportService;
+import io.inventiv.critic.service.BugReportService;
+import io.inventiv.critic.service.PingService;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -15,8 +16,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public final class Client {
 
-	public static ReportService reportService() {
-		return service(ReportService.class);
+	public static BugReportService bugReportService() {
+		return service(BugReportService.class);
+	}
+	public static PingService pingService() {
+		return service(PingService.class);
 	}
 
     private static <T> T service(final Class<T> service) {

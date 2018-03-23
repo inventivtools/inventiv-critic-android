@@ -1,11 +1,12 @@
 package io.inventiv.critic.model;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 import java.util.List;
 
-public class Report {
+public class BugReport {
 
     @SerializedName("id")
 	private Long id;
@@ -18,7 +19,7 @@ public class Report {
 	@SerializedName("product_id")
 	private Long productId;
 	@SerializedName("metadata")
-	private String metadata;
+	private JsonObject metadata;
 	@SerializedName("attachments")
 	private List<Attachment> attachments;
 
@@ -62,11 +63,11 @@ public class Report {
 		this.productId = productId;
 	}
 
-	public String getMetadata() {
+	public JsonObject getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(String metadata) {
+	public void setMetadata(JsonObject metadata) {
 		this.metadata = metadata;
 	}
 
@@ -79,18 +80,19 @@ public class Report {
      */
 	public static class Wrapper {
 
-		private Report report;
+		@SerializedName("bug_report")
+		private BugReport bugReport;
 
-        public Wrapper(Report report) {
-            setReport(report);
+        public Wrapper(BugReport bugReport) {
+            setBugReport(bugReport);
         }
 
-		public Report getReport() {
-			return report;
+		public BugReport getBugReport() {
+			return bugReport;
 		}
 
-		public void setReport(Report report) {
-			this.report = report;
+		public void setBugReport(BugReport bugReport) {
+			this.bugReport = bugReport;
 		}
 	}
 }

@@ -14,10 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.gson.JsonObject;
-
-import io.inventiv.critic.client.ReportCreator;
-import io.inventiv.critic.model.Report;
+import io.inventiv.critic.client.BugReportCreator;
+import io.inventiv.critic.model.BugReport;
 
 public class FeedbackReportActivity extends AppCompatActivity {
 
@@ -144,15 +142,12 @@ public class FeedbackReportActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            JsonObject metadataJson = new JsonObject();
-
             try {
-                Report report = new ReportCreator()
+                BugReport bugReport = new BugReportCreator()
                         .description(mDescription)
-                        .metadata(metadataJson)
                 .create(FeedbackReportActivity.this);
-                System.out.println( "new report created: " + report.getDescription() );
-            } catch (ReportCreator.ReportCreationException e) {
+                System.out.println( "new report created: " + bugReport.getDescription() );
+            } catch (BugReportCreator.ReportCreationException e) {
                 e.printStackTrace();
                 Log.e(FeedbackReportActivity.class.getSimpleName(), "Report creation failed.", e);
             }
