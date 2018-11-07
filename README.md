@@ -54,7 +54,7 @@ Critic.setProductMetadata(productMetadata);
 ```
 
 ## Customizing Feedback Reports
-Use the `ReportCreator` to build your own reports for custom user experiences or other use cases. Perform `ReportCreator` work on a background thread.
+Use the `BugReportCreator` to build your own reports for custom user experiences or other use cases. Perform `BugReportCreator` work on a background thread.
 ```
 String description = "Text provided by your user.";
 
@@ -66,14 +66,14 @@ List<File> files = new ArrayList<File>();
 files.add(new File("/path/to/a/file/to/attach"));
 files.add(new File("/path/to/another/file/to/attach"));
     
-Report report = new ReportCreator()
+BugReport report = new BugReportCreator()
     .description(description)
     .metadata(metadata)
     .attachments(files)
 .create(mContext); // mContext is a Context object such as your current Activity.
 ```
 
-The `ReportCreator.create()` call will return a Report object if successful. Otherwise, a `ReportCreationException` will be thrown.
+The `BugReportCreator.create()` call will return a BugReport object if successful. Otherwise, a `ReportCreationException` will be thrown.
 ## Viewing Feedback Reports
 Visit the [Critic web portal](https://critic.inventiv.io/) to view submitted reports. Below is some of the device and app-specific information included with every Android report.
 
