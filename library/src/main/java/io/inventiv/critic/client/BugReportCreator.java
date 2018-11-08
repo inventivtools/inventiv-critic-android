@@ -62,7 +62,13 @@ public class BugReportCreator {
 
                     // determine Content-Type to send for file.
                     String contentType = null;
-                    final String extension = filename.substring(filename.lastIndexOf("."));
+                    int extensionIndex = filename.lastIndexOf(".");
+
+                    String extension = null;
+                    if(extensionIndex > 0) {
+                        extension = filename.substring(extensionIndex);
+                    }
+
                     if (extension != null) {
                         contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
                     }
