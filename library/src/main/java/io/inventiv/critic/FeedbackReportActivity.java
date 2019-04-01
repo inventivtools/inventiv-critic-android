@@ -147,9 +147,9 @@ public class FeedbackReportActivity extends AppCompatActivity {
                         .description(mDescription)
                 .create(FeedbackReportActivity.this);
                 System.out.println( "new report created: " + bugReport.getDescription() );
-            } catch (BugReportCreator.ReportCreationException e) {
-                e.printStackTrace();
-                Log.e(FeedbackReportActivity.class.getSimpleName(), "Report creation failed.", e);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                Log.e(FeedbackReportActivity.class.getSimpleName(), "Report creation failed.", t);
             }
 
             return true;

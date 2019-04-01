@@ -67,7 +67,12 @@ public final class Critic {
         registerBatteryBroadcastReceiver();
         startShakeDetection();
 
-        new PingCreator().create(mContext);
+        try {
+            new PingCreator().create(mContext);
+        }
+        catch(PingCreator.PingCreationException e) {
+            Log.e(PingCreator.class.getName(), "Failed to create ping.", e);
+        }
     }
 
     public static void startShakeDetection() {
@@ -117,7 +122,6 @@ public final class Critic {
 
     public static JsonObject getAppJson() {
 
-
         JsonObject app = new JsonObject();
 
         ApplicationInfo applicationInfo = mContext.getApplicationInfo();
@@ -144,7 +148,6 @@ public final class Critic {
     }
 
     public static JsonObject getDeviceJson() {
-
 
         JsonObject build = new JsonObject();
 

@@ -27,6 +27,10 @@ public class BugReportCreator {
 
     public BugReport create(Context context) throws ReportCreationException {
 
+        if(Critic.getAppInstallId() == null) {
+            throw new AssertionError("Failed to authenticate with bug reporting service. Please try again later.");
+        }
+
         if(description() == null || description().length() == 0) {
             throw new AssertionError("You need to provide a description to continue.");
         }
