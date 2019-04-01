@@ -70,8 +70,8 @@ public final class Critic {
         try {
             new PingCreator().create(mContext);
         }
-        catch(PingCreator.PingCreationException e) {
-            Log.e(PingCreator.class.getName(), "Failed to create ping.", e);
+        catch(Throwable t) {
+            Log.e(PingCreator.class.getName(), "Failed to create ping.", t);
         }
     }
 
